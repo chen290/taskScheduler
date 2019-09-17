@@ -1,36 +1,22 @@
+import pickle
+import sys
+
 ROOT = None
+SAVE_FILE = 'tasks.node'
+
 def stringConstructer(task, layer):
     string = task.name + '\n'
     for subtasks in task.child:
         string += layer * ' ' + '-' + stringConstructer(subtasks, layer+1)
     return string
 
-def getFeaturesNode(node):
-    string = node.name + ','
-    for child in node.child:
-        string += child.name + ','
-    return string
+def save():
+    with open(SAVE_FILE, 'wb') as taskFile:
+        pickle.dump(ROOT, taskFile)
 
-def getFeatures(node, string):
-    stringNode = getFeaturesNode(node)
-    string[0] += stringNode + '\n'
-    if node.child == []:
-        return
-    for child in node.child:
-        getFeatures(child, string)
-
-def save(ROOT):
-    file = open("./saved.bin", "w")
-    string = ['']
-    getFeatures(ROOT, string)
-    file.write(string[0])
-    file.close()
-
-def load(ROOT):
-    file = open("./saved.bin", "rb")
-    ROOT = file.read()
-    file.close()
-
+def load():
+    with open(SAVE_FILE, 'rb') as taskFile:
+        ROOT = pickle.load(taskFile)
 class Task:
     def __init__(self, taskName):
         self.name = taskName
@@ -47,15 +33,7 @@ class Task:
         self.child.add(task)
 
 def main():
-    task1 = Task("task1")
-    task2 = Task("task2")
-    task3 = Task("task1.1")
-    ROOT = Task("")
-    task1.add(task3)
-    ROOT.add(task1)
-    ROOT.add(task2)
-    print(ROOT)
-    save(ROOT)
+    
 
 if __name__== "__main__":
   main()
